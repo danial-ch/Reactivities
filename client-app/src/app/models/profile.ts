@@ -21,3 +21,13 @@ export interface Photo {
     url : string;
     isMain : boolean;
 }
+
+export class ProfileBioDto{
+    displayName : string = "";
+    bio? : string = "";
+
+    constructor(Profile : Profile){
+        this.displayName = Profile.displayName;
+        this.bio = Profile.bio;
+    }
+}

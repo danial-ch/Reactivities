@@ -172,4 +172,28 @@ export default class ActivityStore{
             runInAction(() => {this.loading = false;})
         }
     }
+
+    updateHostImage = (photoUrl : string) => {
+        try{
+            var user = store.userStore.user;
+            this.activityRegistry.forEach(activity => {
+                if (activity.hostUsername === user?.username) {
+                    activity.host!.image = photoUrl;
+                }
+            })
+            this.activityRegistry.forEach(activity => {
+                activity.attendees.forEach(attendee => {
+                    if (attendee.username === user?.username) {
+                        attendee.image = photoUrl;
+                    }
+                })
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    clearSelectedActivity = () => {
+        this.selectedActivity = undefined;
+    }
 }
