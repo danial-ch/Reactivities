@@ -60,6 +60,7 @@ export default class ActivityStore{
                 break;
             case 'resetStartDate':
                 this.predicate.delete('startDate');
+                break;
         }
     }
 

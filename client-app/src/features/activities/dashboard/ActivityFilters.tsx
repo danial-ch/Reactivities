@@ -43,6 +43,9 @@ export default observer(function ActivityFilters() {
                 fluid
                 color="teal"
                 content={"Activities After " + format(predicate.get("startDate") as Date, "MMMM d, yyyy")}
+                onClick={() => setPredicate("resetStartDate", "true")}
+                disabled={loading}
+                loading={loading}
               />
             </Reveal.Content>
             <Reveal.Content hidden style={{ width: "100%" }}>
@@ -53,7 +56,6 @@ export default observer(function ActivityFilters() {
                 content={"Reset Date"}
                 disabled={loading}
                 loading={loading}
-                onClick={() => setPredicate("resetStartDate", "true")}
               />
             </Reveal.Content>
           </Reveal>
