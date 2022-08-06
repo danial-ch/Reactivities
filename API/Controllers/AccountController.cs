@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -18,15 +19,22 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private UserManager<AppUser> _userManager;
-        private SignInManager<AppUser> _signInManager;
-        private TokenService _tokenService;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly TokenService _tokenService;
+        private readonly IConfiguration _config;
+        private readonly HttpClient _httpClient;
         public AccountController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, TokenService tokenService)
+            SignInManager<AppUser> signInManager, TokenService tokenService, IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _config = config;
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://www.googleapis.com")
+            };
         }
 
         [HttpPost("login")]
@@ -90,6 +98,45 @@ namespace API.Controllers
             return CreateUserObject(user);
         }
 
+        [HttpPost("googleLogin")]
+        public async Task<ActionResult<UserDto>> GoogleLogin([FromQuery]string accessToken)
+        {
+            var token = await _httpClient.GetAsync($"oauth2/v3/userinfo?access_token={accessToken}");
+
+            if(!token.IsSuccessStatusCode) return Unauthorized();
+
+            var googleInfo = JsonConvert.DeserializeObject<dynamic>(
+                await token.Content.ReadAsStringAsync());
+
+            var username = (string)googleInfo.sub;
+
+            var user = await _userManager.Users.Include(p => p.Photos)
+                .FirstOrDefaultAsync(x => x.UserName == username);
+
+            if (user != null) return CreateUserObject(user);
+
+            user = new AppUser
+            {
+                DisplayName = (string)googleInfo.name,
+                Email = (string)googleInfo.email,
+                UserName = (string)googleInfo.sub,
+                Photos = new List<Photo>
+                {
+                    new Photo
+                    {
+                        Id = "google_" + (string)googleInfo.sub,
+                        Url = (string)googleInfo.picture,
+                        IsMain = true
+                    }
+                }
+            };
+
+            var result = await _userManager.CreateAsync(user);
+
+            if (!result.Succeeded) return BadRequest("Problem creating user account");
+
+            return CreateUserObject(user);
+        }
         private UserDto CreateUserObject(AppUser user)
         {
             return new UserDto

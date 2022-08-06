@@ -87,7 +87,8 @@ const Activities ={
 const Account = {
     current : () => request.get<User>('/account'),
     login : (user : UserFormValues) => request.post<User>('/account/login', user),
-    register : (user : UserFormValues) => request.post<User>('/account/register', user)
+    register : (user : UserFormValues) => request.post<User>('/account/register', user),
+    googleLogin : (accessToken : string) => request.post<User>(`/account/googlelogin?accessToken=${accessToken}`, {}),
 }
 
 const Profiles = {

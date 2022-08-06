@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Button, Container, Dropdown, Image, Menu } from "semantic-ui-react";
+import GoogleLogoutButton from "../../features/users/GoogleLogoutButton";
 import { useStore } from "../stores/store";
 
 export default observer(function Navbar() {
@@ -44,7 +45,9 @@ export default observer(function Navbar() {
                 text="My Profile"
                 icon="user"
               />
-              <Dropdown.Item onClick={logout} text="Logout" icon="power" />
+              <Dropdown.Item>
+                <GoogleLogoutButton />
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Item>
