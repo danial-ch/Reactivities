@@ -48,7 +48,7 @@ namespace API
                 .FontSources(s => s.Self().CustomSources("https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"))
                 .FormActions(s => s.Self())
                 .FrameAncestors(s => s.Self())
-                .ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "data:"))
+                .ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "data:", "blob:"))
                 .ScriptSources(s => s.Self().CustomSources("https://apis.google.com"))
             );
 
