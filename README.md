@@ -1,6 +1,4 @@
 ### Reactivities
-<br />
-<br />
 Event managmenet website written in react and asp.nect.
 <br />
 Client-side is uses React with typescript and Semantic-UI for it's framework.
